@@ -8,6 +8,34 @@ exports.forLib = function (LIB) {
         var Request = function () {
             var self = this;
         }
+        Request.prototype.get = function (uri, options) {
+            options = options || {};
+    
+            var url = context.resolveUri(uri);
+    
+            var init = {
+                headers: {
+                    // Will cause 403 to return instead of redirect when unauthorized
+                    "X-Request-Type": "background-request"
+                }
+            };
+            LIB._.merge(init, {
+                // Send cookies by default
+                credentials: 'same-origin'
+            });
+
+            LIB._.merge(init, options);
+
+            LIB._.merge(init, {
+                method: 'get',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            return window.fetch(url, init);
+        }
         Request.prototype.postJSON = function (uri, options, payload) {
             options = options || {};
     
